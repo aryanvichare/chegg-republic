@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { SupabaseUploadResponse, uploadToSubabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Document } from "@prisma/client";
+import { nanoid } from "@/lib/utils";
 
 interface DocumentDropzoneProps {}
 
@@ -40,6 +41,8 @@ const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [shouldRedirect, setShouldRedirect] = useState(false);
+
+  const chatId = nanoid();
 
   const onDrop = async (acceptedFiles: File[]) => {
     console.log(acceptedFiles);
@@ -78,11 +81,10 @@ const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
       toast.error("Something went wrong");
     }
 
+    setDocument(document);
+
     setLoading(false);
-    setTimeout(() => {
-      setDocument(document);
-      setShouldRedirect(true);
-    }, 500);
+    setShouldRedirect(true);
   };
 
   const deleteFile = (file: File) => {
@@ -90,10 +92,10 @@ const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
   };
 
   useEffect(() => {
-    if (document && shouldRedirect) {
-      router.push(`/chat/${document.chatId}`);
+    if (chatId && document && shouldRedirect) {
+      router.push(`/chat/${chatId}`);
     }
-  }, [router, document, shouldRedirect]);
+  }, [router, chatId, document, shouldRedirect]);
 
   const { getRootProps, getInputProps, isFocused, isDragAccept, isDragReject } =
     useDropzone({ onDrop });

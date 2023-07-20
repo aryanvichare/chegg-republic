@@ -8,10 +8,16 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/Container";
-import { NavLinks } from "@/components/NavLinks";
 import BlurImage from "../BlurImage";
 
-interface NavbarProps {}
+import { useSignInModal } from "@/components/auth/SignInModal";
+import { Session } from "next-auth";
+import UserDropdown from "../auth/UserDropdown";
+import { useRouter } from "next/navigation";
+
+interface NavbarProps {
+  session: Session | null;
+}
 
 function MenuIcon(props: any) {
   return (
@@ -55,9 +61,13 @@ function MobileNavLink({ children, ...props }: MobileNavLinkProps) {
   );
 }
 
-const Navbar: FC<NavbarProps> = ({}) => {
+const Navbar: FC<NavbarProps> = ({ session }) => {
+  const router = useRouter();
+  const { SignInModal, setShowSignInModal } = useSignInModal();
+
   return (
     <>
+      <SignInModal />
       <header>
         <nav>
           <Container className='relative z-50 flex h-[100px] justify-between py-8'>
@@ -112,11 +122,18 @@ const Navbar: FC<NavbarProps> = ({}) => {
                               transition: { duration: 0.2 },
                             }}
                             className='absolute inset-x-0 top-0 z-0 origin-top rounded-b-2xl bg-background px-6 pb-6 pt-32 shadow-2xl shadow-gray-900/20'>
-                            <div className='space-y-4'>
-                              <MobileNavLink href='/'>Learn More</MobileNavLink>
-                            </div>
+                            {/* <div className='space-y-4'>
+                              <MobileNavLink href='/'>Log In</MobileNavLink>
+                            </div> */}
                             <div className='mt-8 flex flex-col gap-4'>
-                              <Button variant='outline'>Get Started</Button>
+                              <Button
+                                onClick={() => {
+                                  close();
+                                  setShowSignInModal(true);
+                                }}
+                                variant='outline'>
+                                Log in
+                              </Button>
                             </div>
                           </Popover.Panel>
                         </>
@@ -125,15 +142,35 @@ const Navbar: FC<NavbarProps> = ({}) => {
                   </>
                 )}
               </Popover>
-              <Button
-                variant='default'
-                asChild
-                className='hidden font-semibold lg:block'>
-                <Link href='/welcome'>Get Started</Link>
-              </Button>
-              <Button variant='outline' className='hidden lg:block'>
-                Log in
-              </Button>
+
+              {session ? (
+                <>
+                  <UserDropdown session={session} />
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant='default'
+                    onClick={() => {
+                      if (!session) {
+                        setShowSignInModal(true);
+                      } else {
+                        router.push("/welcome");
+                      }
+                    }}
+                    className='hidden font-semibold lg:block'>
+                    Get Started
+                  </Button>
+                  <Button
+                    variant='outline'
+                    className='hidden lg:block'
+                    onClick={() => {
+                      setShowSignInModal(true);
+                    }}>
+                    Log in
+                  </Button>
+                </>
+              )}
             </div>
           </Container>
         </nav>

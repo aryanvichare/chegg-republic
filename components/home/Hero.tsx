@@ -45,7 +45,7 @@ const Hero: FC<HeroProps> = ({}) => {
                 asChild
                 variant='outline'
                 className='rounded-full px-8 font-semibold'>
-                <Link href='/browse-jobs'>Learn More</Link>
+                <Link href='/about'>Learn More</Link>
               </Button>
             </div>
           </FadeIn>

@@ -8,7 +8,7 @@ import { IconArrowRight } from "@/components/ui/icons";
 const exampleMessages = [
   {
     heading: "📝 Provide an example",
-    message: `Give me an example of: \n?`,
+    message: `Give me an example of: \n`,
   },
   {
     heading: "💡 Explain a concept",

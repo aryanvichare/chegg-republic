@@ -1,7 +1,7 @@
 import { FC } from "react";
 import Chat from "@/components/chat/Chat";
+import { getChat } from "@/app/actions";
 
-export const runtime = "edge";
 export const preferredRegion = "home";
 
 interface ChatPageProps {
@@ -10,8 +10,12 @@ interface ChatPageProps {
   };
 }
 
-const ChatPage: FC<ChatPageProps> = ({ params: { id } }) => {
-  return <Chat id={id} />;
+const ChatPage: FC<ChatPageProps> = async ({ params: { id } }) => {
+  const chat = await getChat(id);
+
+  console.log("Chat Reference:", chat);
+
+  return <Chat initialMessages={chat?.messages} id={id} />;
 };
 
 export default ChatPage;

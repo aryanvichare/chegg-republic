@@ -1,4 +1,5 @@
 import "@/app/globals.css";
+import Nav from "@/components/layout/Nav";
 import Navbar from "@/components/layout/Navbar";
 import Providers from "@/components/providers/Providers";
 import type { Metadata } from "next";
@@ -39,7 +40,7 @@ export default function RootLayout({
       className={`bg-background ${inter.variable} ${lexend.variable} ${dmMono.variable}`}>
       <body suppressHydrationWarning={true}>
         <Providers>
-          <Navbar />
+          <Nav />
           <main className='min-h-screen flex items-center justify-center h-full'>
             {children}
           </main>

@@ -1,16 +1,25 @@
 import fs from "fs";
 import prisma from "@/lib/prisma";
-import pinecone from "@/lib/pinecone";
+import pinecone, { initializePinecone } from "@/lib/pinecone";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { PineconeStore } from "langchain/vectorstores/pinecone";
-import { nanoid } from "nanoid";
 
 import axios from "axios";
+import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(request: Request, response: Response) {
+  const session = await auth();
+
+  if (!session) {
+    return NextResponse.json(
+      { error: "Unauthorized Request." },
+      { status: 401 }
+    );
+  }
+
   const body = await request.json();
 
   if (!body || !body.url || !body.path || !body.name) {
@@ -25,7 +34,7 @@ export async function POST(request: Request) {
       url: body?.url,
       path: body?.path,
       name: body?.name,
-      chatId: nanoid(),
+      userId: session.user.id,
     },
   });
 
@@ -50,6 +59,10 @@ export async function POST(request: Request) {
     timeout: 60000,
     maxConcurrency: 5,
   });
+
+  if (!pinecone) {
+    initializePinecone();
+  }
 
   const index = pinecone.Index(process.env.PINECONE_INDEX_NAME!);
 
