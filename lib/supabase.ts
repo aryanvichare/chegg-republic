@@ -2,8 +2,8 @@ import { StorageError } from "@supabase/storage-js";
 import { createClient } from "@supabase/supabase-js";
 
 export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-  process.env.NEXT_PUBLIC_SUPABASE_KEY as string
+  process.env.SUPABASE_URL as string,
+  process.env.SUPABASE_KEY as string
 );
 
 export type SupabaseUploadResponse = {
@@ -26,7 +26,7 @@ export const uploadToSubabase = async (
         error: StorageError;
       }
   > = supabase.storage
-    .from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET!)
+    .from(process.env.SUPABASE_BUCKET!)
     .upload(`${Date.now()}.pdf`, file, {
       cacheControl: "3600",
       upsert: false,
@@ -42,7 +42,7 @@ export const uploadToSubabase = async (
   const {
     data: { publicUrl },
   } = supabase.storage
-    .from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET!)
+    .from(process.env.SUPABASE_BUCKET!)
     .getPublicUrl(data.path);
 
   return { path: data.path, publicUrl };
