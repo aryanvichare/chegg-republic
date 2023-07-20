@@ -1,11 +1,13 @@
 "use client";
 
-import { FileIcon, Loader2 } from "lucide-react";
-import { FC, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { FileIcon, Loader2, X } from "lucide-react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "../ui/button";
-import { uploadToSubabase } from "@/lib/supabase";
+import { SupabaseUploadResponse, uploadToSubabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { Document } from "@prisma/client";
 
 interface DocumentDropzoneProps {}
 
@@ -32,8 +34,12 @@ const rejectStyle = {
 };
 
 const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
+  const router = useRouter();
+
+  const [document, setDocument] = useState<Document | null>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
   const onDrop = async (acceptedFiles: File[]) => {
     console.log(acceptedFiles);
@@ -48,7 +54,9 @@ const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
     const file = files?.[0];
 
     // TODO: Handle multiple files
-    const data = await uploadToSubabase(file);
+    const { path, publicUrl: url } = (await uploadToSubabase(
+      file
+    )) as SupabaseUploadResponse;
 
     const response = await fetch("/api/documents", {
       method: "POST",
@@ -56,10 +64,13 @@ const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        url: data?.path,
+        url,
+        path,
         name: file.name,
       }),
     });
+
+    const document = (await response.json()) as Document;
 
     if (response.ok) {
       toast.success("Files uploaded successfully");
@@ -68,7 +79,21 @@ const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
     }
 
     setLoading(false);
+    setTimeout(() => {
+      setDocument(document);
+      setShouldRedirect(true);
+    }, 500);
   };
+
+  const deleteFile = (file: File) => {
+    setFiles(files.filter((f) => f !== file));
+  };
+
+  useEffect(() => {
+    if (document && shouldRedirect) {
+      router.push(`/chat/${document.chatId}`);
+    }
+  }, [router, document, shouldRedirect]);
 
   const { getRootProps, getInputProps, isFocused, isDragAccept, isDragReject } =
     useDropzone({ onDrop });
@@ -121,7 +146,12 @@ const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
             return (
               <div
                 key={idx}
-                className='w-full flex flex-col rounded-md border border-gray-300 border-dashed'>
+                className='cursor-pointer group relative w-full flex flex-col rounded-md border border-gray-300 border-dashed'>
+                <div
+                  onClick={() => deleteFile(file)}
+                  className='hidden group-hover:block transition transition-all duration-150 ease-in-out group-hover:absolute top-4 right-4'>
+                  <X className='text-white h-6 w-6 font-bold' />
+                </div>
                 <div className='bg-gradient-to-r bg-gradient-to-r from-amber-500 via-orange-600 to-yellow-500 rounded-tr-md rounded-tl-md border-b border-gray-300 py-12'>
                   <FileIcon className='mx-auto h-12 w-12 text-white' />
                 </div>

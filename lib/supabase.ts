@@ -6,7 +6,14 @@ export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_KEY as string
 );
 
-export const uploadToSubabase = async (file: any) => {
+export type SupabaseUploadResponse = {
+  path: string;
+  publicUrl: string;
+};
+
+export const uploadToSubabase = async (
+  file: any
+): Promise<SupabaseUploadResponse | undefined> => {
   const storagePromise: Promise<
     | {
         data: {
@@ -32,5 +39,11 @@ export const uploadToSubabase = async (file: any) => {
     return;
   }
 
-  return data;
+  const {
+    data: { publicUrl },
+  } = supabase.storage
+    .from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET!)
+    .getPublicUrl(data.path);
+
+  return { path: data.path, publicUrl };
 };

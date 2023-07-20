@@ -13,7 +13,9 @@ datasource db {
 model Document {
   id         String   @id @default(cuid())
   name       String?
+  path       String
   url        String
+  chatId     String
   created_at DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
