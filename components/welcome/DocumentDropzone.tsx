@@ -55,22 +55,24 @@ const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
     }
     setLoading(true);
 
-    const uploadedFiles = await Promise.all(
+    const supabaseUploads = (await Promise.all(
       files.map(async (file) => {
-        const supabaseUpload = (await uploadToSubabase(
-          file
-        )) as SupabaseUploadResponse;
-
-        console.log("⚡️", "Supabase Upload", supabaseUpload);
-
-        return {
-          url: supabaseUpload?.publicUrl,
-          path: supabaseUpload?.path,
-          name: file.name,
-          namespace: chatId,
-        };
+        return uploadToSubabase(file);
       })
-    );
+    )) as SupabaseUploadResponse[];
+
+    console.log("⚡️", "Supabase Uploads", supabaseUploads);
+
+    const uploadedFiles = files.map((file, idx) => {
+      return {
+        url: supabaseUploads[idx].publicUrl,
+        path: supabaseUploads[idx].path,
+        name: file.name,
+        namespace: chatId,
+      };
+    });
+
+    console.log(uploadedFiles);
 
     const response = await fetch("/api/documents", {
       method: "POST",

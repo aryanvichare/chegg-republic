@@ -1,5 +1,6 @@
 import { StorageError } from "@supabase/storage-js";
 import { createClient } from "@supabase/supabase-js";
+import { nanoid } from "nanoid";
 
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,
@@ -27,7 +28,7 @@ export const uploadToSubabase = async (
       }
   > = supabase.storage
     .from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET!)
-    .upload(`${Date.now()}.pdf`, file, {
+    .upload(`${nanoid()}.pdf`, file, {
       cacheControl: "3600",
       upsert: false,
     });
