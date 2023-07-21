@@ -36,7 +36,7 @@ export const uploadToSubabase = async (
   const { data, error } = await storagePromise;
 
   if (error) {
-    console.log(error);
+    console.log("Supabase Upload Error", error);
     return;
   }
 
