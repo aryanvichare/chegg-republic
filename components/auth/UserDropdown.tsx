@@ -2,7 +2,7 @@
 
 import { FC, useState } from "react";
 import { signOut } from "next-auth/react";
-import { Briefcase, LogOut, Rocket } from "lucide-react";
+import { Home, LogOut, Rocket } from "lucide-react";
 import Popover from "@/components/Popover";
 import Image from "next/image";
 import { Session } from "next-auth";
@@ -26,10 +26,17 @@ const UserDropdown: FC<UserDropdownProps> = ({ session }) => {
           <div className='w-full rounded-md bg-background p-2 sm:w-56'>
             <Link
               className='relative flex w-full items-center justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-800'
+              href='/dashboard'
+              onClick={() => setOpenPopover(false)}>
+              <Home className='h-4 w-4' />
+              <p className='text-sm'>Dashboard</p>
+            </Link>
+            <Link
+              className='relative flex w-full items-center justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-800'
               href='/welcome'
               onClick={() => setOpenPopover(false)}>
               <Rocket className='h-4 w-4' />
-              <p className='text-sm'>Get Started</p>
+              <p className='text-sm'>New Chat</p>
             </Link>
             {/* <button
               className="relative flex w-full cursor-not-allowed items-center justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100"

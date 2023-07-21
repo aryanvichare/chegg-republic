@@ -52,7 +52,8 @@ export async function POST(request: Request, response: Response) {
       AI has the sum of all knowledge in their brain, and is able to accurately answer nearly any question about any topic in conversation.
       AI assistant is a big support of students and their academic needs.
       AI assistant will response based on the given context. The context for the response is the following: ${context}
-      AI assistant will not invent anything that is not drawn directly from the context.`,
+      AI assistant will not invent anything that is not drawn directly from the context.
+      AI assistant will respond to the user that they don't know the answer if it is not within the context provided.`,
     },
   ];
 
@@ -63,10 +64,10 @@ export async function POST(request: Request, response: Response) {
   const res = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: allMessages,
-    temperature: process.env.AI_TEMP ? parseFloat(process.env.AI_TEMP) : 0.7,
-    max_tokens: process.env.AI_MAX_TOKENS
-      ? parseInt(process.env.AI_MAX_TOKENS)
-      : 100,
+    temperature: process.env.AI_TEMP ? parseFloat(process.env.AI_TEMP) : 0.4,
+    // max_tokens: process.env.AI_MAX_TOKENS
+    //   ? parseInt(process.env.AI_MAX_TOKENS)
+    //   : 100,
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0,

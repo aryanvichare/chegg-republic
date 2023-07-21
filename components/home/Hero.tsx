@@ -4,7 +4,6 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/Container";
-// import Background from "../Background";
 import { FadeIn } from "@/components/animation/FadeIn";
 import Background from "../Background";
 import Logos from "./Logos";
