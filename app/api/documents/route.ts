@@ -80,7 +80,6 @@ export async function POST(request: Request, response: Response) {
   });
 
   const pinecone = await initializePinecone();
-
   const index = pinecone.Index(process.env.PINECONE_INDEX_NAME!);
 
   console.log(
@@ -88,12 +87,17 @@ export async function POST(request: Request, response: Response) {
     `Uploading embeddings to Pinecone with index ${index} and namespace ${namespace}`
   );
 
-  await PineconeStore.fromDocuments(documents, embeddings, {
-    pineconeIndex: index,
-    namespace: namespace,
-  });
+  try {
+    await PineconeStore.fromDocuments(documents, embeddings, {
+      pineconeIndex: index,
+      namespace: namespace,
+    });
 
-  return NextResponse.json(prismaDocuments, { status: 200 });
+    return NextResponse.json(prismaDocuments, { status: 200 });
+  } catch (e) {
+    console.log(e);
+    return NextResponse.json({ message: e }, { status: 500 });
+  }
 }
 
 export async function GET(request: Request) {
