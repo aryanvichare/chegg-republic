@@ -26,6 +26,7 @@ model Document {
   name       String?
   path       String
   url        String
+  namespace  String   @unique
   created_at DateTime @default(now())
   updatedAt  DateTime @updatedAt
   User       User?    @relation(fields: [userId], references: [id])

@@ -13,8 +13,6 @@ interface ChatPageProps {
 const ChatPage: FC<ChatPageProps> = async ({ params: { id } }) => {
   const chat = await getChat(id);
 
-  console.log("Chat Reference:", chat);
-
   return <Chat initialMessages={chat?.messages} id={id} />;
 };
 

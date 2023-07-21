@@ -42,7 +42,7 @@ const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
   const [loading, setLoading] = useState(false);
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
-  const chatId = nanoid();
+  const [chatId, setChatId] = useState<string>(nanoid());
 
   const onDrop = async (acceptedFiles: File[]) => {
     console.log(acceptedFiles);
@@ -70,6 +70,7 @@ const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
         url,
         path,
         name: file.name,
+        namespace: chatId,
       }),
     });
 
@@ -79,23 +80,23 @@ const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
       toast.success("Files uploaded successfully");
     } else {
       toast.error("Something went wrong");
+      setLoading(false);
     }
 
     setDocument(document);
-
-    setLoading(false);
-    setShouldRedirect(true);
+    router.push(`/chat/${chatId}`);
   };
 
   const deleteFile = (file: File) => {
     setFiles(files.filter((f) => f !== file));
   };
 
-  useEffect(() => {
-    if (chatId && document && shouldRedirect) {
-      router.push(`/chat/${chatId}`);
-    }
-  }, [router, chatId, document, shouldRedirect]);
+  // useEffect(() => {
+  //   if (chatId && document && shouldRedirect) {
+  //     router.push(`/chat/${chatId}`);
+  //     setLoading(false);
+  //   }
+  // }, [router, chatId, document, shouldRedirect]);
 
   const { getRootProps, getInputProps, isFocused, isDragAccept, isDragReject } =
     useDropzone({ onDrop });

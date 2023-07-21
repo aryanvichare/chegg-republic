@@ -22,18 +22,27 @@ export async function POST(request: Request, response: Response) {
 
   const body = await request.json();
 
-  if (!body || !body.url || !body.path || !body.name) {
+  if (!body || !body.url || !body.path || !body.name || !body.namespace) {
     return NextResponse.json(
       { error: "Invalid request. Missing required params" },
       { status: 429 }
     );
   }
 
+  console.log({
+    url: body.url,
+    path: body.path,
+    name: body.name,
+    namespace: body.namespace,
+    userId: session.user.id,
+  });
+
   const document = await prisma.document.create({
     data: {
-      url: body?.url,
-      path: body?.path,
-      name: body?.name,
+      url: body.url,
+      path: body.path,
+      name: body.name,
+      namespace: body.namespace,
       userId: session.user.id,
     },
   });
@@ -66,9 +75,14 @@ export async function POST(request: Request, response: Response) {
 
   const index = pinecone.Index(process.env.PINECONE_INDEX_NAME!);
 
+  console.log(
+    "🌲",
+    `Uploading embeddings to Pinecone with index ${index} and namespace ${body.namespace}`
+  );
+
   await PineconeStore.fromDocuments(documents, embeddings, {
     pineconeIndex: index,
-    namespace: document.id,
+    namespace: body.namespace,
   });
 
   return NextResponse.json(document, { status: 200 });

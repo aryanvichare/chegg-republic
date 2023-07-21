@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/Container";
 // import Background from "../Background";
 import { FadeIn } from "@/components/animation/FadeIn";
+import Background from "../Background";
+import Logos from "./Logos";
 
 interface HeroProps {}
 
@@ -13,7 +15,7 @@ const Hero: FC<HeroProps> = ({}) => {
   return (
     <div className='relative min-h-screen min-w-screen w-full h-full'>
       <div className='relative flex h-full my-auto w-full flex-col items-center justify-center py-[5rem] overflow-hidden [--geist-foreground:#030711] [--gradient-stop-1:0px] [--gradient-stop-2:120px] dark:[--geist-foreground:#030711] sm:[--gradient-stop-1:0px] sm:[--gradient-stop-2:120px]'>
-        {/* <Background /> */}
+        <Background />
         <Container className='z-10 pb-16 pt-20 text-center lg:pt-32'>
           {/* <FadeIn noVertical>
           <BadgeAnnoucement />
@@ -48,6 +50,9 @@ const Hero: FC<HeroProps> = ({}) => {
                 <Link href='/about'>Learn More</Link>
               </Button>
             </div>
+          </FadeIn>
+          <FadeIn delay={0.3}>
+            <Logos />
           </FadeIn>
         </Container>
         <Image
