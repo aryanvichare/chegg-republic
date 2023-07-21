@@ -2,7 +2,7 @@ import { kv } from "@vercel/kv";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { Configuration, OpenAIApi } from "openai-edge";
 
-import pinecone from "@/lib/pinecone";
+import pinecone, { initializePinecone } from "@/lib/pinecone";
 import { getContext } from "@/lib/langchain/vectorstores/pinecone";
 
 import { nanoid } from "@/lib/utils";
@@ -38,6 +38,7 @@ export async function POST(request: Request, response: Response) {
   const prompt = messages[messages.length - 1].content ?? "";
   const sanitizedPrompt = `${prompt.trim().replaceAll("\n", " ")}`;
 
+  initializePinecone();
   const context = await getContext(sanitizedPrompt, pinecone, namespace);
 
   const allMessages: ChatGPTMessage[] = [
