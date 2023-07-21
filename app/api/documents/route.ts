@@ -1,6 +1,6 @@
 import fs from "fs";
 import prisma from "@/lib/prisma";
-import pinecone, { initializePinecone } from "@/lib/pinecone";
+import { initializePinecone } from "@/lib/pinecone";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { type Document } from "langchain/dist/document";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
@@ -61,7 +61,7 @@ export async function POST(request: Request, response: Response) {
     })
   );
 
-  console.log("rawDocuments", rawDocuments);
+  // console.log("rawDocuments", rawDocuments);
 
   /* Split text into chunks */
   const textSplitter = new RecursiveCharacterTextSplitter({
@@ -79,9 +79,7 @@ export async function POST(request: Request, response: Response) {
     maxConcurrency: 5,
   });
 
-  if (!pinecone) {
-    initializePinecone();
-  }
+  const pinecone = await initializePinecone();
 
   const index = pinecone.Index(process.env.PINECONE_INDEX_NAME!);
 
