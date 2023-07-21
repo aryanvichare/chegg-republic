@@ -57,13 +57,15 @@ const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
 
     const uploadedFiles = await Promise.all(
       files.map(async (file) => {
-        const { path, publicUrl: url } = (await uploadToSubabase(
+        const supabaseUpload = (await uploadToSubabase(
           file
         )) as SupabaseUploadResponse;
 
+        console.log("⚡️", "Supabase Upload", supabaseUpload);
+
         return {
-          url,
-          path,
+          url: supabaseUpload?.publicUrl,
+          path: supabaseUpload?.path,
           name: file.name,
           namespace: chatId,
         };

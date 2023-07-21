@@ -62,12 +62,13 @@ export async function POST(request: Request, response: Response) {
   console.log(allMessages);
 
   const res = await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
+    model: "gpt-4",
     messages: allMessages,
-    temperature: process.env.AI_TEMP ? parseFloat(process.env.AI_TEMP) : 0.4,
+    temperature: 0.7,
     // max_tokens: process.env.AI_MAX_TOKENS
     //   ? parseInt(process.env.AI_MAX_TOKENS)
     //   : 100,
+    max_tokens: 5000,
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0,
