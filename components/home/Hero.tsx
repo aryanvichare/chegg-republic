@@ -16,9 +16,6 @@ const Hero: FC<HeroProps> = ({}) => {
       <div className='relative flex h-full my-auto w-full flex-col items-center justify-center py-[5rem] overflow-hidden [--geist-foreground:#030711] [--gradient-stop-1:0px] [--gradient-stop-2:120px] dark:[--geist-foreground:#030711] sm:[--gradient-stop-1:0px] sm:[--gradient-stop-2:120px]'>
         <Background />
         <Container className='z-10 pb-16 pt-20 text-center lg:pt-32'>
-          {/* <FadeIn noVertical>
-          <BadgeAnnoucement />
-        </FadeIn> */}
           <FadeIn>
             <h1 className='relative mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight sm:text-7xl'>
               <span className='relative whitespace-nowrap text-primary'>
@@ -35,8 +32,8 @@ const Hero: FC<HeroProps> = ({}) => {
           </FadeIn>
           <FadeIn delay={0.2}>
             <p className='mx-auto mt-6 max-w-xl text-lg tracking-tight opacity-70'>
-              Upload your notes, textbooks, and other study materials. Chat with
-              your documents and find friends to study with.
+              Upload your notes, textbooks, videos and other study materials.
+              Chat with your documents and find friends to study with.
             </p>
             <div className='mx-auto mt-8 flex justify-center space-x-4'>
               <Button asChild className='rounded-full px-8 font-semibold'>

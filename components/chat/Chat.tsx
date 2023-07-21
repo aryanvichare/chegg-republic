@@ -41,18 +41,15 @@ const Chat: FC<ChatProps> = ({ id, initialMessages, className }) => {
   return (
     <>
       <div className={cn("pb-[200px] w-full pt-4 md:pt-10", className)}>
-        {messages.length ? (
-          <>
-            <div className='grid grid-cols-3'>
-              <RecommendedGroups />
-              <ChatList messages={messages} />
-              {id ? <DocumentsList id={id} /> : null}
-            </div>
-            <ChatScrollAnchor trackVisibility={isLoading} />
-          </>
-        ) : (
-          <EmptyScreen setInput={setInput} />
-        )}
+        <div className='grid grid-cols-3'>
+          <RecommendedGroups />
+          {messages.length ? (
+            <ChatList messages={messages} isLoading={isLoading} />
+          ) : (
+            <EmptyScreen setInput={setInput} />
+          )}
+          {id ? <DocumentsList id={id} /> : null}
+        </div>
       </div>
       <ChatPanel
         id={id}

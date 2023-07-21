@@ -7,6 +7,7 @@ import { CodeBlock } from "@/components/chat/ui/Codeblock";
 import { MemoizedReactMarkdown } from "@/components/chat/ui/Markdown";
 import { IconOpenAI, IconUser } from "@/components/ui/icons";
 import { ChatMessageActions } from "@/components/chat/ChatMessageActions";
+import BlurImage from "../BlurImage";
 
 export interface ChatMessageProps {
   message: Message;
@@ -24,7 +25,16 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
             ? "bg-background"
             : "bg-primary text-primary-foreground"
         )}>
-        {message.role === "user" ? <IconUser /> : <IconOpenAI />}
+        {message.role === "user" ? (
+          <IconUser />
+        ) : (
+          <BlurImage
+            src={"/images/C.svg"}
+            alt='Chegg Icon'
+            width={13}
+            height={13}
+          />
+        )}
       </div>
       <div className='ml-4 flex-1 space-y-2 overflow-hidden px-1'>
         <MemoizedReactMarkdown

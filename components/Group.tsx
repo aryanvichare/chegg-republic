@@ -78,7 +78,7 @@ const Group: FC<GroupProps> = ({
               {buttonClicked ? (
                 <div className='flex items-center space-x-2'>
                   <CheckCircle2 className='w-4 h-4' />
-                  <span className='text-sm ml-1 mt-[1px]'>Joined</span>
+                  <span className='text-sm mt-[1px]'>Joined</span>
                 </div>
               ) : (
                 `Join Group`
