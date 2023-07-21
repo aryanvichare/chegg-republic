@@ -2,12 +2,12 @@ import { kv } from "@vercel/kv";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { Configuration, OpenAIApi } from "openai-edge";
 
-import pinecone, { initializePinecone } from "@/lib/pinecone";
 import { getContext } from "@/lib/langchain/vectorstores/pinecone";
 
 import { nanoid } from "@/lib/utils";
 import { auth } from "@/lib/auth";
 import { ChatGPTMessage } from "@/lib/types";
+import { initializePinecone } from "@/lib/pinecone";
 
 export const runtime = "edge";
 
@@ -38,7 +38,7 @@ export async function POST(request: Request, response: Response) {
   const prompt = messages[messages.length - 1].content ?? "";
   const sanitizedPrompt = `${prompt.trim().replaceAll("\n", " ")}`;
 
-  initializePinecone();
+  const pinecone = await initializePinecone();
   const context = await getContext(sanitizedPrompt, pinecone, namespace);
 
   const allMessages: ChatGPTMessage[] = [

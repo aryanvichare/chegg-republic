@@ -14,16 +14,19 @@ export type Metadata = {
 const pinecone = new PineconeClient();
 
 export async function initializePinecone() {
-  if (!pinecone) {
-    throw new Error("Pinecone client does not exist");
+  try {
+    const pinecone = new PineconeClient();
+
+    await pinecone.init({
+      environment: process.env.PINECONE_ENVIRONMENT as string,
+      apiKey: process.env.PINECONE_API_KEY as string,
+    });
+
+    return pinecone;
+  } catch (error) {
+    console.log("error", error);
+    throw new Error("Failed to initialize Pinecone Client");
   }
-
-  console.log("Initializing Pinecone client");
-
-  await pinecone.init({
-    environment: process.env.PINECONE_ENVIRONMENT as string,
-    apiKey: process.env.PINECONE_API_KEY as string,
-  });
 }
 
 initializePinecone();
