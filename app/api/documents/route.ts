@@ -2,6 +2,7 @@ import fs from "fs";
 import prisma from "@/lib/prisma";
 import pinecone, { initializePinecone } from "@/lib/pinecone";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
+import { type Document } from "langchain/dist/document";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { PineconeStore } from "langchain/vectorstores/pinecone";
@@ -9,6 +10,7 @@ import { PineconeStore } from "langchain/vectorstores/pinecone";
 import axios from "axios";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { Document as PrismaDocument } from "@prisma/client";
 
 export async function POST(request: Request, response: Response) {
   const session = await auth();
@@ -20,39 +22,47 @@ export async function POST(request: Request, response: Response) {
     );
   }
 
-  const body = await request.json();
+  const {
+    uploadedFiles: files,
+    namespace,
+  }: { uploadedFiles: PrismaDocument[]; namespace: string } =
+    await request.json();
 
-  if (!body || !body.url || !body.path || !body.name || !body.namespace) {
+  if (!files || !Array.isArray(files)) {
     return NextResponse.json(
       { error: "Invalid request. Missing required params" },
       { status: 429 }
     );
   }
 
-  console.log({
-    url: body.url,
-    path: body.path,
-    name: body.name,
-    namespace: body.namespace,
-    userId: session.user.id,
-  });
-
-  const document = await prisma.document.create({
-    data: {
-      url: body.url,
-      path: body.path,
-      name: body.name,
-      namespace: body.namespace,
+  const augmentedFiles = files.map((file) => {
+    return {
+      ...file,
       userId: session.user.id,
-    },
+    };
   });
 
-  const res = await axios.get(body.url, { responseType: "arraybuffer" });
-  fs.writeFileSync(`/tmp/${document.id}.pdf`, res.data);
+  const prismaDocuments = await prisma.document.createMany({
+    data: augmentedFiles,
+  });
 
-  const loader = new PDFLoader(`/tmp/${document.id}.pdf`);
+  let loader: PDFLoader;
+  let rawDocuments: Document[] = [];
 
-  const rawDocuments = await loader.load();
+  await Promise.all(
+    files.map(async (file: PrismaDocument) => {
+      const res = await axios.get(file.url, { responseType: "arraybuffer" });
+      fs.writeFileSync(`/tmp/${file.id}.pdf`, res.data);
+
+      loader = new PDFLoader(`/tmp/${file.id}.pdf`);
+      const document = await loader.load();
+
+      rawDocuments = [...rawDocuments, ...document];
+    })
+  );
+
+  console.log("rawDocuments", rawDocuments);
+
   /* Split text into chunks */
   const textSplitter = new RecursiveCharacterTextSplitter({
     chunkSize: 1536,
@@ -77,19 +87,32 @@ export async function POST(request: Request, response: Response) {
 
   console.log(
     "🌲",
-    `Uploading embeddings to Pinecone with index ${index} and namespace ${body.namespace}`
+    `Uploading embeddings to Pinecone with index ${index} and namespace ${namespace}`
   );
 
   await PineconeStore.fromDocuments(documents, embeddings, {
     pineconeIndex: index,
-    namespace: body.namespace,
+    namespace: namespace,
   });
 
-  return NextResponse.json(document, { status: 200 });
+  return NextResponse.json(prismaDocuments, { status: 200 });
 }
 
 export async function GET(request: Request) {
+  const searchParams = new URL(request.url).searchParams;
+  const namespace = searchParams.get("namespace");
+
+  if (!namespace) {
+    return NextResponse.json(
+      { error: "Invalid request. Missing required params" },
+      { status: 429 }
+    );
+  }
+
   const data = await prisma.document.findMany({
+    where: {
+      namespace: namespace,
+    },
     orderBy: {
       created_at: "desc",
     },

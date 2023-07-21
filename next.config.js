@@ -2,6 +2,7 @@
 const nextConfig = {
   images: {
     domains: [
+      "vcfnwtipofygooafmtea.supabase.co",
       "lh3.googleusercontent.com",
       "avatar.vercel.sh",
       "res.cloudinary.com",

@@ -1,3 +1,4 @@
+import { SAFELIST } from "./lib/data";
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   // darkMode: ["class"],
@@ -6,6 +7,7 @@ module.exports = {
     "components/**/*.{ts,tsx}",
     "./content/**/*.{md,mdx}",
   ],
+  safelist: SAFELIST,
   theme: {
     fontSize: {
       xs: ["0.75rem", { lineHeight: "1rem" }],

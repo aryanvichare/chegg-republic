@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { FileIcon, Loader2, X } from "lucide-react";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "../ui/button";
 import { SupabaseUploadResponse, uploadToSubabase } from "@/lib/supabase";
@@ -54,24 +54,28 @@ const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
       toast.error("No files to upload");
     }
     setLoading(true);
-    const file = files?.[0];
 
-    // TODO: Handle multiple files
-    const { path, publicUrl: url } = (await uploadToSubabase(
-      file
-    )) as SupabaseUploadResponse;
+    const uploadedFiles = await Promise.all(
+      files.map(async (file) => {
+        const { path, publicUrl: url } = (await uploadToSubabase(
+          file
+        )) as SupabaseUploadResponse;
+
+        return {
+          url,
+          path,
+          name: file.name,
+          namespace: chatId,
+        };
+      })
+    );
 
     const response = await fetch("/api/documents", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        url,
-        path,
-        name: file.name,
-        namespace: chatId,
-      }),
+      body: JSON.stringify({ uploadedFiles, namespace: chatId }),
     });
 
     const document = (await response.json()) as Document;
@@ -90,13 +94,6 @@ const DocumentDropzone: FC<DocumentDropzoneProps> = ({}) => {
   const deleteFile = (file: File) => {
     setFiles(files.filter((f) => f !== file));
   };
-
-  // useEffect(() => {
-  //   if (chatId && document && shouldRedirect) {
-  //     router.push(`/chat/${chatId}`);
-  //     setLoading(false);
-  //   }
-  // }, [router, chatId, document, shouldRedirect]);
 
   const { getRootProps, getInputProps, isFocused, isDragAccept, isDragReject } =
     useDropzone({ onDrop });

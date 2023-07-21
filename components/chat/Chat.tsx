@@ -9,6 +9,8 @@ import { ChatScrollAnchor } from "./ChatScrollAnchor";
 import { toast } from "sonner";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { ChatPanel } from "./ChatPanel";
+import DocumentsList from "./DocumentsList";
+import RecommendedGroups from "./RecommendedGroups";
 
 export interface ChatProps extends React.ComponentProps<"div"> {
   initialMessages?: Message[];
@@ -41,7 +43,11 @@ const Chat: FC<ChatProps> = ({ id, initialMessages, className }) => {
       <div className={cn("pb-[200px] w-full pt-4 md:pt-10", className)}>
         {messages.length ? (
           <>
-            <ChatList messages={messages} />
+            <div className='grid grid-cols-3'>
+              <RecommendedGroups />
+              <ChatList messages={messages} />
+              {id ? <DocumentsList id={id} /> : null}
+            </div>
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>
         ) : (

@@ -5,18 +5,9 @@ import { redirect } from "next/navigation";
 import { type Chat } from "@/lib/types";
 import { formatDate, truncate } from "@/lib/utils";
 import Link from "next/link";
+import EmptyChatHistory from "./EmptyChatHistory";
 
 interface ChatHistoryProps {}
-
-const people = [
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  // More people...
-];
 
 const ChatHistory: FC<ChatHistoryProps> = async ({}) => {
   const session = await auth();
@@ -26,7 +17,10 @@ const ChatHistory: FC<ChatHistoryProps> = async ({}) => {
   }
 
   const chats = (await getChats(session.user.id)) as Chat[];
-  console.log(chats);
+
+  if (!chats || chats.length === 0) {
+    return <EmptyChatHistory />;
+  }
 
   return (
     <div className='mt-12 flow-root'>
