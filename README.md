@@ -15,6 +15,7 @@ Open source platform for interactive learning through AI-powered conversations w
 - Next.js
 - Vercel AI SDK
 - OpenAI GPT-4
+- Supabase
+- Redis
 - Langchain
 - Pinecone
-- Redis
