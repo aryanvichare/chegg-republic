@@ -14,6 +14,8 @@ Open source platform for interactive learning through AI-powered conversations w
 
 - Next.js
 - Vercel AI SDK
+- Tailwind CSS
+- shadcn/ui
 - OpenAI GPT-4
 - Supabase
 - Redis
